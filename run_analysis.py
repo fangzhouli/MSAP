@@ -13,18 +13,18 @@ import numpy as np
 import pandas as pd
 import click
 
-from a2h.modeling.model_evaluation.statistics import (
+from msap.modeling.model_evaluation.statistics import (
     get_embedded_data,
     get_selected_features,
     get_curve_metrics,
     get_training_statistics,
     get_similarity_matrix)
-from a2h.explanatory_analysis import get_pairwise_correlation
-from a2h.utils import (
+from msap.explanatory_analysis import get_pairwise_correlation
+from msap.utils import (
     ClassifierHandler,
     load_X_and_y,
     KFold_by_feature)
-from a2h.utils.plot import (
+from msap.utils.plot import (
     plot_heatmap,
     plot_embedded_scatter,
     plot_rfe_line,

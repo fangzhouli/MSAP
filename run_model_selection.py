@@ -19,12 +19,12 @@ import pandas as pd
 from tqdm import tqdm
 import click
 
-from a2h.modeling.configs import (
+from msap.modeling.configs import (
     GridSearchConfig,
     ModelSelectionConfig)
-from a2h.modeling.model_selection.train import train_grid_search_cv, train_cv
-from a2h.modeling.model_selection.preprocessing import Preprocessor
-from a2h.utils import (
+from msap.modeling.model_selection.train import train_grid_search_cv, train_cv
+from msap.modeling.model_selection.preprocessing import Preprocessor
+from msap.utils import (
     ClassifierHandler,
     load_X_and_y,
     dump_X_and_y,
