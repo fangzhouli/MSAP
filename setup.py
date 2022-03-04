@@ -12,7 +12,7 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
-    name='',
+    name='msap',
     version='0.1.0',
     description='',
     long_description=long_description,
@@ -20,18 +20,6 @@ setup(
     url='',  # GitHub link.
     author='Fangzhou Li',
     author_email='fzli@ucdavis.edu',
-    classifiers=[
-        'Development Status :: 1 - Planning',
-        # 'Environment ::',
-        # 'Framework ::',
-        # 'Intended Audience ::',
-        # 'License ::',
-        # 'Natural Language ::',
-        # 'Operating System ::',
-        # 'Programming Language ::',
-        # 'Topic ::',
-    ],
-    keywords='',
     packages=find_packages(),
     python_requires='>=3.8',
     install_requires=[
