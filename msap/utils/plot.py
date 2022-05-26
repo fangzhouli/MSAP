@@ -93,28 +93,88 @@ def plot_rfe_line(
         sfs: SequentialFeatureSelector,
         title: str = None,
         path_save: str = None):
-    fig, ax = plt.subplots(figsize=(15, 15))
+    """
+    """
+    sfs_result = pd.DataFrame(
+        sfs.get_metric_dict()
+    ).transpose().reset_index()
 
-    sfs_result = pd.DataFrame(sfs.get_metric_dict()).transpose().reset_index()
-    n_features_best = len(sfs.k_feature_idx_)
+    features = sfs_result.loc[0, 'feature_names']
+    feature_idx_list = sfs_result['feature_idx'].tolist()
+    xticklabels = []
+    for i in range(len(feature_idx_list) - 1, -1, -1):
+        if i == len(feature_idx_list) - 1:
+            xticklabels += [features[feature_idx_list[i][0]]]
+        else:
+            xticklabels += [
+                features[
+                    (set(feature_idx_list[i])
+                     - set(feature_idx_list[i + 1])).pop()
+                ]
+            ]
+
+    data_plot = []
+
+    def unstack_cv_scores(data_plot, row):
+        """
+        """
+        for score in row['cv_scores']:
+            data_plot += [{'n_features': row['index'], 'score': score}]
+
+    sfs_result.apply(
+        lambda row: unstack_cv_scores(data_plot, row),
+        axis=1)
+    data_plot = pd.DataFrame(data_plot)
     xs = sfs_result['index'].tolist()
-    ys = sfs_result['avg_score'].tolist()
+    n_features_best = len(sfs.k_feature_idx_)
 
+    # Overview plot.
+    fig, axs = plt.subplots(1, 2, figsize=(15, 5))
     sns.lineplot(
-        x=xs,
-        y=ys)
-    plt.xlim(max(xs) + 1, min(xs) - 1)
-    plt.xticks(
+        data=data_plot,
+        x='n_features',
+        y='score',
+        ci='sd',
+        ax=axs[0],
+    )
+    axs[0].vlines(
+        n_features_best,
+        axs[0].get_ylim()[0],
+        axs[0].get_ylim()[1],
+        linestyles='dashed',
+        label='Best')
+    axs[0].set_xticks(
         [max(xs), min(xs)]
-        + list(range(max(xs), min(xs), -int(len(xs) / 5)))
+        + list(range(max(xs), min(xs), -int(len(xs) / min(5, len(xs)))))
         + [n_features_best])
-    plt.vlines(
-        n_features_best, plt.ylim()[0], plt.ylim()[1], linestyles='dashed',
-        label='Elbow')
-    plt.legend()
-
+    axs[0].legend()
+    axs[0].set_xlabel('The Number of Features')
+    axs[0].set_ylabel('F1 Score')
     if title is not None:
-        ax.set_title(title, fontsize=40, fontweight='bold')
+        axs[0].set_title(title, fontsize=40, fontweight='bold')
+
+    # Detailed plot.
+    sns.lineplot(
+        data=data_plot,
+        x='n_features',
+        y='score',
+        ci='sd',
+        ax=axs[1],
+    )
+    axs[1].vlines(
+        n_features_best,
+        axs[1].get_ylim()[0],
+        axs[1].get_ylim()[1],
+        linestyles='dashed',
+        label='Best')
+    axs[1].set_xticks(
+        ticks=list(range(1, len(xticklabels) + 1)),
+        labels=xticklabels,
+        rotation=90,
+    )
+    axs[1].legend()
+    axs[1].set_xlabel('Features')
+    axs[1].set_ylabel('F1 Score')
 
     if path_save is not None:
         fig.savefig(path_save)
